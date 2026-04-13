@@ -15,8 +15,8 @@
       --court-color:      #16213e;   /* inner play area */
       --net-color:        #0f3460;   /* center dashed line */
       --ball-color:       #e94560;   /* ball fill */
-      --paddle-p1-color:  #d80000;   /* left paddle  (Player 1) */
-      --paddle-p2-color:  #ef90e2;   /* right paddle (Player 2) */
+      --paddle-Manaysay-color:  #d80000;   /* left paddle  (Player 1) */
+      --paddle-Lanceta-color:  #ef90e2;   /* right paddle (Player 2) */
       --score-color:      #ffffff;   /* score & UI text */
       --ui-font:          'Courier New', Courier, monospace;
     }
@@ -132,7 +132,7 @@
       running:   false,   // true while game loop is active
       paused:    false,   // true when SPACE toggles pause mid-game
       gameOver:  false,
-      scores:    { p1: 0, p2: 0 },
+      scores:    { Manaysay: 0, Lanceta: 0 },
     };
  
     /* ─────────────────────────────────────────
@@ -165,13 +165,13 @@
       dy: 0,   // current vertical velocity (set by key handlers)
     };
  
-    const p1 = {
+    const Manaysay = {
       ...paddleDefaults,
       x: SETTINGS.paddle.margin,
       y: canvas.height / 2 - SETTINGS.paddle.height / 2,
     };
  
-    const p2 = {
+    const Lanceta = {
       ...paddleDefaults,
       x: canvas.width - SETTINGS.paddle.margin - SETTINGS.paddle.width,
       y: canvas.height / 2 - SETTINGS.paddle.height / 2,
@@ -226,18 +226,18 @@
  
     function movePaddles() {
       // Player 1: W (up) / S (down)
-      if (keys['w'] || keys['W']) p1.dy = -SETTINGS.paddle.speed;
-      else if (keys['s'] || keys['S']) p1.dy =  SETTINGS.paddle.speed;
-      else p1.dy = 0;
+      if (keys['w'] || keys['W']) Manaysay.dy = -SETTINGS.paddle.speed;
+      else if (keys['s'] || keys['S']) Manaysay.dy =  SETTINGS.paddle.speed;
+      else Manaysay.dy = 0;
  
       // Player 2: ArrowUp / ArrowDown
-      if (keys['ArrowUp'])   p2.dy = -SETTINGS.paddle.speed;
-      else if (keys['ArrowDown']) p2.dy =  SETTINGS.paddle.speed;
-      else p2.dy = 0;
+      if (keys['ArrowUp'])   Lanceta.dy = -SETTINGS.paddle.speed;
+      else if (keys['ArrowDown']) Lanceta.dy =  SETTINGS.paddle.speed;
+      else Lanceta.dy = 0;
  
       // Apply movement and keep paddles inside the court
-      p1.y = clamp(p1.y + p1.dy, 0, canvas.height - p1.h);
-      p2.y = clamp(p2.y + p2.dy, 0, canvas.height - p2.h);
+      Manaysay.y = clamp(Manaysay.y + Manaysay.dy, 0, canvas.height - Manaysay.h);
+      Lanceta.y = clamp(Lanceta.y + Lanceta.dy, 0, canvas.height - Lanceta.h);
     }
  
     function moveBall() {
@@ -256,34 +256,34 @@
  
       // ── Paddle collision (Player 1)
       if (
-        ball.x - ball.r <= p1.x + p1.w &&
-        ball.x + ball.r >= p1.x         &&
-        ball.y          >= p1.y          &&
-        ball.y          <= p1.y + p1.h
+        ball.x - ball.r <= Manaysay.x + Manaysay.w &&
+        ball.x + ball.r >= Manaysay.x         &&
+        ball.y          >= Manaysay.y          &&
+        ball.y          <= Manaysay.y + Manaysay.h
       ) {
-        ball.x  = p1.x + p1.w + ball.r;  // push ball out of paddle
-        bounceBallOff(p1, 1);
+        ball.x  = Manaysay.x + Manaysay.w + ball.r;  // push ball out of paddle
+        bounceBallOff(Manaysay, 1);
       }
  
       // ── Paddle collision (Player 2)
       if (
-        ball.x + ball.r >= p2.x         &&
-        ball.x - ball.r <= p2.x + p2.w  &&
-        ball.y          >= p2.y          &&
-        ball.y          <= p2.y + p2.h
+        ball.x + ball.r >= Lanceta.x         &&
+        ball.x - ball.r <= Lanceta.x + Lanceta.w  &&
+        ball.y          >= Lanceta.y          &&
+        ball.y          <= Lanceta.y + Lanceta.h
       ) {
-        ball.x  = p2.x - ball.r;         // push ball out of paddle
-        bounceBallOff(p2, -1);
+        ball.x  = Lanceta.x - ball.r;         // push ball out of paddle
+        bounceBallOff(Lanceta, -1);
       }
  
-      // ── Score: ball leaves left side → P2 scores
+      // ── Score: ball leaves left side → Lanceta scores
       if (ball.x - ball.r < 0) {
-        score('p2');
+        score('Lanceta');
         return;
       }
-      // ── Score: ball leaves right side → P1 scores
+      // ── Score: ball leaves right side → Manaysay scores
       if (ball.x + ball.r > canvas.width) {
-        score('p1');
+        score('Manaysay');
       }
     }
  
@@ -320,7 +320,7 @@
         endGame(player);
       } else {
         // Serve toward the player who just lost the point
-        ball.reset(player === 'p1');   // scored on p2 → serve left; p1 → right
+        ball.reset(player === 'Manaysay');   // scored on Lanceta → serve left; Manaysay → right
         resetPaddles();
       }
     }
@@ -347,25 +347,25 @@
       ctx.fillStyle = cssVar('--score-color');
       ctx.font      = 'bold 48px ' + cssVar('--ui-font');
       ctx.textAlign = 'center';
-      ctx.fillText(state.scores.p1, canvas.width / 4,       60);
-      ctx.fillText(state.scores.p2, canvas.width * 3 / 4,   60);
+      ctx.fillText(state.scores.Manaysay, canvas.width / 4,       60);
+      ctx.fillText(state.scores.Lanceta, canvas.width * 3 / 4,   60);
  
       // ── Player labels (subtle)
       ctx.font      = '12px ' + cssVar('--ui-font');
       ctx.globalAlpha = 0.4;
-      ctx.fillText('P1', canvas.width / 4,     80);
-      ctx.fillText('P2', canvas.width * 3 / 4, 80);
+      ctx.fillText('Manaysay', canvas.width / 4,     80);
+      ctx.fillText('Lanceta', canvas.width * 3 / 4, 80);
       ctx.globalAlpha = 1;
  
       // ── Paddles
-      ctx.fillStyle = cssVar('--paddle-p1-color');
+      ctx.fillStyle = cssVar('--paddle-Manaysay-color');
       ctx.beginPath();
-      ctx.roundRect(p1.x, p1.y, p1.w, p1.h, 4);
+      ctx.roundRect(Manaysay.x, Manaysay.y, Manaysay.w, Manaysay.h, 4);
       ctx.fill();
  
-      ctx.fillStyle = cssVar('--paddle-p2-color');
+      ctx.fillStyle = cssVar('--paddle-Lanceta-color');
       ctx.beginPath();
-      ctx.roundRect(p2.x, p2.y, p2.w, p2.h, 4);
+      ctx.roundRect(Lanceta.x, Lanceta.y, Lanceta.w, Lanceta.h, 4);
       ctx.fill();
  
       // ── Ball (circle with a glow effect)
@@ -429,13 +429,13 @@
       // Draw one final frame so the last score is visible
       draw();
  
-      const label = winner === 'p1' ? 'PLAYER 1' : 'PLAYER 2';
+      const label = winner === 'Manaysay' ? 'PLAYER 1' : 'PLAYER 2';
       message.textContent = `🏆 ${label} WINS!  Press SPACE to play again.`;
     }
  
     function resetGame() {
       cancelAnimationFrame(animId);
-      state.scores   = { p1: 0, p2: 0 };
+      state.scores   = { Manaysay: 0, Lanceta: 0 };
       state.gameOver = false;
       state.paused   = false;
       resetPaddles();
@@ -445,10 +445,10 @@
     }
  
     function resetPaddles() {
-      p1.y = canvas.height / 2 - p1.h / 2;
-      p2.y = canvas.height / 2 - p2.h / 2;
-      p1.dy = 0;
-      p2.dy = 0;
+      Manaysay.y = canvas.height / 2 - Manaysay.h / 2;
+      Lanceta.y = canvas.height / 2 - Lanceta.h / 2;
+      Manaysay.dy = 0;
+      Lanceta.dy = 0;
     }
  
     /* ─────────────────────────────────────────
